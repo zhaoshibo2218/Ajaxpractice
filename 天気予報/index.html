@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>長崎市5日間の天気予報</title>
+    <style>
+        #view{
+            padding: 10px;
+            border: 4px solid #6f28bb;
+            width: 50%px;
+            background-color: aliceblue;
+            height:500px;
+            overflow: auto;
+        }
+        img{
+            width:50px;
+        }
+        #view>div{
+            border-bottom: 1px dotted #3838ab;
+            font-size:medium;
+        }
+        .bold{
+            font-weight: bold;
+        }
+        h2{
+            font-size:x-large;
+            color:#f1071e;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>
+           <span id="area"></span>天気5日間
+        </h1>
+        <div id="view">
+            <div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+        const key   = "d147a842c73c4556796f517273c51340";  //OpenWeatherAPI自分のｋｅｙ
+        const lat   = "32.75029";   //緯度
+        const lon   = "129.877731";  //軽度
+        const icon  = "http://openweathermap.org/img/wn/"; //ICONにアクセスするURL 
+    
+        //OpenWeatherAPI（天気情報を取得）5DAY/3hour
+       const url = 'https://api.openweathermap.org/data/2.5/forecast?lat='+lat+'&lon='+lon+'&appid='+key+'&lang=ja';
+        axios({
+            url: url,
+        }).then(result => {
+            //バッククオート
+            let str = '';
+            console.log(result);
+            const data = result.data.list;//データを取得
+            let area = result.data.city.name;//エリアを取得
+            //(item.dt_txt)日付と時間を取得
+            //(item.weather[0].main)天気を取得英語
+            //(weather[0].description)天気を取得を取得
+            //(icon+item.weather[0].icon)天気に表示する画像を取得
+           data.forEach((item) => {
+                str += `
+            <div>
+                <div>${item.dt_txt}</div>
+                <div>風速：${item.wind.speed}</div>
+                <div>天気：${item.weather[0].description}</div>
+                <div>降水確率：${parseInt(item.pop*100)}%</div>
+                <div><img src="${icon+item.weather[0].icon}.png"></div>
+            </div> `
+            });
+            
+            //取得した天気の情報をｈｔｍｌに埋め込む
+            document.querySelector('#view').innerHTML = str;
+            //取得したエリアの情報をｈｔｍｌに埋め込む
+            document.querySelector('#area').innerHTML = area;
+        })
+    </script>
+</body>
+</html>
